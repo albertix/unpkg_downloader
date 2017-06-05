@@ -7,11 +7,20 @@ import click
 import json
 
 def get_list(url):
+    print(url)
     conn = http.client.HTTPSConnection('unpkg.com')
     conn.request('GET', url[17:])
-    r = conn.getresponse().read()
+    resp = conn.getresponse()
+    if resp.status != 200:
+        url = resp.headers['location']
+        conn.close()
+        print(url)
+        conn.request('GET', url)
+
+    resp = conn.getresponse()
+    r = resp.read()
     conn.close()
-    print(r)
+
     return json.loads(r)
 
 
