@@ -1,4 +1,8 @@
-import http
+# -*- coding: utf-8 -*-
+# Copyright: Albertix <albertix@live.com>
+# License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
+
+import http.client
 import dateutil.parser
 import zipfile
 import asyncio
@@ -11,6 +15,8 @@ def get_list(url):
     conn = http.client.HTTPSConnection('unpkg.com')
     conn.request('GET', url[17:])
     resp = conn.getresponse()
+    if resp.status == 404:
+        raise Exception('404', 'no such package or version')
     if resp.status != 200:
         url = resp.headers['location']
         conn.close()
@@ -70,14 +76,14 @@ def aio_get_all_url(url, zip_path):
 @click.argument('name_version')
 @click.argument('path', nargs=-1)
 def cli(name_version, path):
+    """
+    unpkg_downloader package[@version] [save_path.zip]
+    """
+    
     url = 'https://unpkg.com/{name_version}/?json'.format(name_version=name_version)
     if not path:
         path = '_'.join(name_version.split('@')) + '.zip'
     else:
         path = path[0]
     aio_get_all_url(url, path)
-
-
-if __name__ == '__main__':
-    cli()
 
