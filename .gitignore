@@ -1,0 +1,11 @@
+.DS_Store
+build/
+dist/
+unpkg_downloader.egg-info/
+*~
+*.swp
+.idea/
+.ipynb_checkpoints/
+~$*
+.*
+__pycache__
