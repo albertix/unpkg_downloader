@@ -17,13 +17,13 @@ def get_list(url):
     resp = conn.getresponse()
     if resp.status == 404:
         raise Exception('404', 'no such package or version')
-    if resp.status != 200:
+    elif resp.status != 200:
         url = resp.headers['location']
         conn.close()
         print(url)
         conn.request('GET', url)
+        resp = conn.getresponse()
 
-    resp = conn.getresponse()
     r = resp.read()
     conn.close()
 
@@ -50,6 +50,7 @@ async def task(loop, i, base_url, f_url, f_time, zf):
     zinfo = zipfile.ZipInfo(filename=f_url[1:], date_time=ztime)
     zinfo.compress_type=zipfile.ZIP_DEFLATED
     async with aiohttp.ClientSession(loop=loop) as client:
+        
         for times in range(5):
             try:
                 context = await fetch(client, base_url + f_url)
@@ -57,7 +58,7 @@ async def task(loop, i, base_url, f_url, f_time, zf):
             except Exception:
                 pass
 
-        if times == 4:
+        if times == 5:
             raise Exception('try many times')
 
         zf.writestr(zinfo, context)
