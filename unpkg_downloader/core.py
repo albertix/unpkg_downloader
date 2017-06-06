@@ -58,7 +58,7 @@ async def task(loop, i, base_url, f_url, f_time, zf):
             except Exception:
                 pass
 
-        if times == 5:
+        if times == 4:
             raise Exception('try many times')
 
         zf.writestr(zinfo, context)
