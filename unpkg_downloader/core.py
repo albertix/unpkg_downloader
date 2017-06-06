@@ -50,9 +50,18 @@ async def task(loop, i, base_url, f_url, f_time, zf):
     zinfo = zipfile.ZipInfo(filename=f_url[1:], date_time=ztime)
     zinfo.compress_type=zipfile.ZIP_DEFLATED
     async with aiohttp.ClientSession(loop=loop) as client:
-        context = await fetch(client, base_url + f_url)
+        for times in range(5):
+            try:
+                context = await fetch(client, base_url + f_url)
+                break
+            except Exception:
+                pass
+
+        if times == 4:
+            raise Exception('try many times')
+
         zf.writestr(zinfo, context)
-        click.echo('%i %s' % (i+1, f_url))
+        click.echo('%i %i %s' % (times, i+1, f_url))
 
 
 def aio_get_all_url(url, zip_path):
